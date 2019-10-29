@@ -1,0 +1,330 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
+
+
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Laboratório 01</title>
+  
+
+
+
+<style type="text/css">
+
+
+p {
+	margin-left: 1cm;
+	margin-right: 1cm;
+	}
+table.matriz {
+	border-width: 1px;
+	border-spacing: 0px;
+	border-style: solid;
+	border-color: black;
+   border-collapse: collapse;
+   
+}
+
+td.matriz{
+font-size: 25px;
+   border-width: 1px;
+	border-spacing: 0;
+	border-style: solid;
+	border-color: black;
+	padding:5px;
+}
+
+
+td.cabecalho{
+font-size: 15px;
+text-align:center;
+   border-width: 2px;
+	border-spacing: 1;
+	border-style: solid;
+	border-color: black;
+	padding:5px;
+}
+
+td.invisivel{
+	border-width: 0px;
+	border-spacing: 0;
+	border-style: solid;
+	border-color: black;
+	padding:5px;
+}
+
+.cabecalho1{
+font-size: 20px;
+}
+
+.cabecalho2{
+font-size: 20px;
+}
+
+
+.header1{
+font-size: 15px;
+}
+
+.header2{
+font-size: 15px;
+}
+
+.rotation {
+	width: 30px;
+}
+.rotation > div{
+
+	display: block;
+	font-weight: bolder;
+	width: 10px !important;
+	margin-top: 100px;
+
+	/* Safari */
+	-webkit-transform: rotate(-90deg);
+
+	/* Firefox */
+	-moz-transform: rotate(-90deg);
+
+	/* IE */
+	-ms-transform: rotate(-90deg);
+
+	/* Opera */
+	-o-transform: rotate(-90deg);
+
+	/* Internet Explorer */
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+
+}
+
+td.impossible{
+
+background-color:EEE0E0;
+}
+
+
+
+</style></head><body bgcolor="#e0e0e0" text="#000000">
+<h2>Instituto de Computação da UNICAMP</h2>
+
+<h3>MC558: Projeto e análise de algoritmos II<br>
+</h3>
+
+<h4>Segundo Semestre de&nbsp; 2019&nbsp; - Turma A<br>
+</h4>
+
+<h3>Laboratório Nº 01 - A pílula fantástica <br>
+</h3>
+<p>Prazo de entrega: <strong>04/11/2019 às 23:59:59</strong></p>
+
+
+<table>
+  <tbody>
+    <tr>
+      <td><i>Docente:</i></td>
+      <td><i>C. N. Campos</i></td>
+    </tr>
+    <tr>
+      <td><i>Monitor:</i></td>
+      <td><i>Leo Vieira Peres<br>
+</i></td>
+    </tr>
+    
+  </tbody>
+</table>
+
+
+<hr>
+
+
+<h3>Contexto:</h3>
+
+<center>
+<img style="width: 259px; height: 194px;" alt="Magic pills" src="magic.jpg"><br>
+
+</center>
+<p>A população do nosso planeta está em polvorosa desde que foi anunciada a descoberta da pílula <strong>Doturacu</strong>.
+O famoso cientista <span style="font-style: italic;">Dr. Hug. E. Liar </span>alega que este remédio é capaz de
+curar qualquer doença e parar o processo de envelhecimento das células.
+Esta descoberta modificará para sempre a história da humanidade. <br>
+</p>
+<p>A apresentação da pílula para o público está marcada para o dia
+28/03. Comparecerão à cerimônia representantes de todos os países da
+Terra. A cerimônia será transmitida ao vivo por todo o planeta. Nesta
+cerimônia, a pílula, cuja eficácia é imediata, será ingerida por quem
+se voluntariar.</p>
+<p>Infelizmente, o que o Dr. Hug E. Liar não deixou claro para a
+população é que existe um limiar muito tênue entre a pílula&nbsp; Doturacu e um
+poderoso veneno, que ele denominou&nbsp; <span style="font-weight: bold;">Dotutama</span>, cujo efeito é acelerar o processo de
+envelhecimento das células, levando à morte instantânea. As píllulas
+Doturacu e Dotutama são feitas a partir de quatro móleculas:<span style="font-style: italic;"> tau'ri</span> (T), <span style="font-style: italic;">jaffa (J)</span>,  <span style="font-style: italic;">goa'uld (G)</span>,  <span style="font-style: italic;">aschen (A)</span>.&nbsp;
+Estas quatro moléculas apenas são encontradas em um meteorito, que caiu
+em uma certa ilha do Pacífico no ano 2000, e possuem uma imensa
+capacidade de se ligarem entre si e consigo mesmas. O que diferencia as
+duas pílulas são as ligações entre as suas moléculas: na pílula
+Doturacu não existem ligações entre moléculas do mesmo tipo;
+não existem ligações entre as moléculas <span style="font-style: italic;">T</span> e <span style="font-style: italic;">J</span>; e não existem ligações
+entre as moléculas <span style="font-style: italic;">G</span> e <span style="font-style: italic;">A</span>. <br>
+</p>
+<p>Hoje, véspera da cerimônia, o nosso querido doutor recebeu uma
+notícia terrível: o seu assistente, <span style="font-style: italic;">Sr. Helter Skelter</span>,
+tropeçou no laboratório e misturou as pílulas de Doturacu e Dotutama.
+Para cada pílula, as únicas informações fáceis de restaurar são: o seu
+número de moleculas e como são as ligações entre estas moléculas.
+Entretanto, não é possível saber de imediato quais os tipos das
+moléculas presentes,
+impossibilitando classificar as ligações entre elas. <br>
+</p>
+<p>Como não há tempo hábil e nem material para fabricar novas pílulas, será necessário
+diferenciá-las por meio de um processo químico, denominado <span style="font-style: italic;">pintalgia</span>, que
+colore as moléculas. O problema é que este processo é caro e há pouca
+verba para comprar os materiais requeridos. Desta forma, é necessário
+diminuir o número de pílulas que serão testadas por pintalgia ao
+estritamente necessário.<br>
+</p>
+<p>Devido a isso você, reconhecido por sua sabedoria, foi convocado
+para ajudar o Dr. Hug E. Liar e o Sr. Helter Skelter a pensar se existe
+uma maneira de classificar parte das pílulas sem ter que testá-las. Após
+<span style="text-decoration: underline;">profunda ponderação</span>,
+você entendeu que é possível separar, com certeza, algumas das pílulas do veneno sem a necessidade de testá-las por pintalgia.
+Assim, você decidiu fazer um programa que recebe como entrada o número
+de moléculas de uma píllula e as suas ligações, e decide se aquela pílula
+precisa ser testada ou não.<br>
+</p>
+<h3>Tarefa:</h3>
+
+<p>Sua tarefa é fazer um programa que recebe os dados existentes de uma pílula e determina se ela precisa ou não passar pelo
+processo de pintalgia.<br>
+</p>
+
+<p></p>
+
+
+
+
+<h3>Entrada:</h3>
+
+<p>A primeira linha da entrada é composta por dois números inteiros, <span style="font-weight: bold; font-style: italic;">&lt;n&gt; &lt;m&gt;</span>, que indicam a quantidade de moléculas e o número de ligações existentes entre elas, respectivamente.
+As próximas <span style="font-weight: bold; font-style: italic;">&lt;m&gt;</span> linhas são compostas por dois números inteiros positivos <span style="font-weight: bold; font-style: italic;">&lt;i&gt;</span> e <span style="font-weight: bold; font-style: italic;">&lt;j&gt;</span> indicando que existe uma ligação entre a molécula <span style="font-weight: bold; font-style: italic;">&lt;i&gt;</span> e a molécula <span style="font-weight: bold; font-style: italic;">&lt;j&gt;</span>, <span style="font-weight: bold;">1 &lt;= </span><span style="font-style: italic; font-weight: bold;">i</span><span style="font-weight: bold;">,</span><span style="font-style: italic; font-weight: bold;">j</span><span style="font-weight: bold;"> &lt;= </span><span style="font-style: italic; font-weight: bold;">n</span>.<br>
+</p>
+
+
+<h3>Saída:</h3>
+<div style="margin-left: 40px;">&nbsp;Existem duas possibilidades:<br>
+<br>
+<span style="font-family: Courier New,Courier,monospace;">dotutama</span><br>
+<div style="margin-left: 40px;">esta saída indica que a molécula pertence ao veneno;<br>
+</div>
+<br>
+<span style="font-family: Courier New,Courier,monospace;">doturacu ou dotutama</span><br>
+<div style="margin-left: 40px;">esta saída indica que o processo de pintalgia é necessário para diferenciar a pílula . &nbsp;&nbsp;&nbsp;  <br>
+</div>
+</div>
+<p><strong>Observações: </strong></p>
+<ul>
+  <li>Você <strong>deve</strong> quebrar a linha após imprimir a resposta.</li>
+  <li>O numero de moléculas é limitado a 10000.</li>
+  <li>O número de ligações é limitato a 1000000.<br>
+  </li>
+
+</ul>
+
+<hr>
+
+<p><strong>Exemplo de execução 1: </strong>
+</p>
+<table border="0" hspace="30">
+  <tbody>
+    <tr><td><tt><font color="BLUE">5 5<br></font></tt></td></tr>
+    <tr><td><tt><font color="BLUE">1 3<br></font></tt></td></tr>
+	 <tr><td><tt><font color="BLUE">1 4</font></tt>
+</td></tr>
+	 <tr><td><tt><font color="BLUE">2 4<br>
+</font></tt></td></tr><tr>
+      <td style="vertical-align: top;"><tt><font color="BLUE">2 5<br>
+</font></tt></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><tt><font color="BLUE">3 4<br>
+</font></tt></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-family: Courier New,Courier,monospace;">dotutama</span></td>
+    </tr>
+
+  </tbody>
+</table>
+
+<p><strong>Exemplo de execução 2: </strong>
+</p>
+<table border="0" hspace="30">
+  <tbody>
+    <tr><td><tt><font color="BLUE">5 5<br></font></tt></td></tr>
+    <tr><td><tt><font color="BLUE">1 3<br></font></tt></td></tr>
+	 <tr><td><tt><font color="BLUE">1 4<br>
+</font></tt></td></tr><tr>
+      <td style="vertical-align: top;"><tt><font color="BLUE">2 3</font></tt></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><tt><font color="BLUE">2 4<br>
+</font></tt></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><tt><font color="BLUE">2 5<br>
+</font></tt></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-family: Courier New,Courier,monospace;">doturacu ou dotutama</span></td>
+    </tr>
+
+  </tbody>
+</table><br>
+
+
+
+
+
+
+
+<table>
+  <tbody>
+    <tr>
+      <td><i>Notas:</i></td>
+      <td>Textos em <font color="BLUE"><tt>azul</tt></font> designam dados de
+        entrada, isto é, que devem ser lidos pelo seu programa.</td>
+    </tr>
+    <tr>
+      <td><br>
+</td>
+      <td>Textos em <tt>preto</tt> designam dados de saída, ou seja, que devem
+        ser impressos pelo seu programa.</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+
+<hr>
+
+
+<b>Observações gerais:</b> 
+<ul>
+  <li>O número máximo de submissões é 30;</li>  
+  <li>O seu programa deve estar completamente contido em um único arquivo denominado <tt>pill.c</tt> ou <tt>pill.cpp</tt>.<br>
+</li>  
+  
+  <li>Para a realização dos testes automáticos, a compilação se dará de uma das seguintes formas:<br>
+    <br>
+    <span style="font-family: Courier New,Courier,monospace;">gcc -Werror -pedantic -Wall -o pill pill.c</span><br>
+    <span style="font-family: Courier New,Courier,monospace;">g++ -Werror -pedantic -Wall -o pill pill.cpp</span><br style="font-family: Courier New,Courier,monospace;">
+    <br>
+  </li>
+  
+  <li>Não se esqueça de incluir no início do programa o seu nome e o seu RA;</li>
+  
+  
+</ul>
+<hr>
+<b>Critérios importantes:</b> <br>
+<br>
+Não deixe de ler esta seção porque poderá incluir informações extras sobre penalidades.</body></html>

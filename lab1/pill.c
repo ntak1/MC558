@@ -13,10 +13,10 @@
  *  Descricao da Solucao:
  *      Seja G = (V, E), onde V represeta o conjunto de moleculas e E o
  *      conjunto de ligacoes. Uma molecula eh com certeza veneno se
- *      houver um ciclo de tamanho 3.
- *      Para verificar a existencia de C3's, a DFS foi modificada pra que
- *      a cada vez que encontrar uma backedge (u,v) (a busca encontrou um
- *      ciclo), seja verificada se pai(u) se encontra na lista de 
+ *      houver um ciclo de tamanho impar.
+ *      Para verificar a existencia de cliclos impares, a DFS foi modificada
+ *      pra que a cada vez que encontrar uma backedge (u,v) (a busca
+ *      encontrou um ciclo), seja verificada se pai(u) se encontra na lista de 
  *      adjacencias de v.
  * */
 
@@ -24,6 +24,10 @@
 #include<stdlib.h>
 #define N_NODES m
 #define N_ADJ n
+#define WHITE 0
+#define GRAY 2
+#define BLACK 3
+#define INITIAL_COLOR -1
 
 /* ESTRUTURAS DE DADOS*/
 typedef struct Node Node;
@@ -32,11 +36,13 @@ typedef struct Adj Adj;
 struct Node{
     int value;
     struct Node * predecessor;
+    char color;
     Adj *adj_list;
 };
 
 struct Adj{
     Node *node;
+    char color;
     struct Adj *next;
 };
 
@@ -45,6 +51,13 @@ typedef struct Graph{
     int n_nodes;
 } Graph;
 
+typedef struct stack{
+    int max_size;
+    int top;
+    int end;
+    Node *stack_nodes;
+} stack;
+
 
 void create_adj(Graph* graph,int i, int j){
     Adj *i_adj_list = NULL, *j_adj_list = NULL;
@@ -52,6 +65,7 @@ void create_adj(Graph* graph,int i, int j){
     /* Insere j na lista de adj de i*/    
     i_adj_list = (Adj*)malloc(sizeof(Adj));
     i_adj_list->next = NULL;
+    i_adj_list->color = INITIAL_COLOR;
     i_adj_list->node = &(graph->nodes[j]);
     if(graph->nodes[i].adj_list == NULL){
         graph->nodes[i].adj_list = i_adj_list;
@@ -64,6 +78,7 @@ void create_adj(Graph* graph,int i, int j){
     /* Insere j na lista de adj de i*/    
     j_adj_list = (Adj*)malloc(sizeof(Adj));
     j_adj_list->next = NULL;
+    j_adj_list->color = INITIAL_COLOR;
     j_adj_list->node = &(graph->nodes[i]);
     if(graph->nodes[j].adj_list == NULL){
         graph->nodes[j].adj_list = j_adj_list;
@@ -91,6 +106,45 @@ void print_graph(Graph *graph){
     }
 }
 
+int create_stack(stack *s){
+    s->max_size = stack_MAX_SIZE;
+    s->top = q->end = 0;
+    s->stack_nodes = (Node*)malloc(sizeof(Node)*STACK_MAX_SIZE);
+    if(s->stack_nodes == NULL){ret = 1;}
+    else{ret = 0;}
+    return ret;
+}
+
+void push(stack *s, Node * node){
+    s->stack_nodes[q->top] = node;
+    s->end = (q->top) + 1;
+    if (s->top <= q.max_size-1){
+        (s->max_size) *= 2;
+        s->stack_nodes = (Node*)realloc(sizeof(Node)*(s->max_size);
+    }
+}
+
+int dfs_visit(Graph *graph, Node *node){
+    int ret;
+    stack q;
+    q = create_stack(&q);
+
+    if(q.stack_nodes != NULL){free(q);}
+
+    return ret;
+}
+
+int dfs(Graph *graph){
+    int i;
+    int ret;
+    for (i = 0; i < graph->n_nodes; i++){
+        if(graph->nodes[i].color == WHITE){
+            ret =dfs_visit(graph, &(graph->nodes[i]));
+        }
+    }
+    return ret;
+}
+
 
 int main(void){
     int m=0,n=0;
@@ -114,6 +168,7 @@ int main(void){
         graph.nodes[i].value = i+1;
         graph.nodes[i].predecessor = NULL;
         graph.nodes[i].adj_list = NULL;
+        graph.nodes[i].color = WHITE;
     }
 
     /* Cria adjacencias*/
