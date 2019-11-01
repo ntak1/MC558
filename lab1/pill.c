@@ -26,6 +26,7 @@
 #define N_ADJ n
 #define WHITE 0
 #define GRAY 1
+#define BLACK 2
 #define INITIAL_COLOR -1
 #define STACK_MAX_SIZE 128
 
@@ -116,6 +117,8 @@ int main(void){
     test = dfs_stack(&graph); 
     if(test == 0){
         printf("doturacu ou dotutama\n");
+    }else{
+        printf("dotutama\n");
     }
 
     /* Desaloca memoria dinamica das variaveis*/
@@ -153,7 +156,7 @@ void create_adj(Graph* graph,int i, int j){
     /* Insere j na lista de adj de i*/    
     i_adj_list = (Adj*)malloc(sizeof(Adj));
     i_adj_list->next = NULL;
-    i_adj_list->color = INITIAL_COLOR;
+    i_adj_list->color = WHITE;
     i_adj_list->node = &(graph->nodes[j]);
     if(graph->nodes[i].adj_list == NULL){
         graph->nodes[i].adj_list = i_adj_list;
@@ -166,13 +169,13 @@ void create_adj(Graph* graph,int i, int j){
     /* Insere j na lista de adj de i*/    
     j_adj_list = (Adj*)malloc(sizeof(Adj));
     j_adj_list->next = NULL;
-    j_adj_list->color = INITIAL_COLOR;
+    j_adj_list->color = WHITE;
     j_adj_list->node = &(graph->nodes[i]);
     if(graph->nodes[j].adj_list == NULL){
         graph->nodes[j].adj_list = j_adj_list;
     }
     else{
-        j_adj_list->next = graph->nodes[i].adj_list;
+        j_adj_list->next = graph->nodes[j].adj_list;
         graph->nodes[j].adj_list = j_adj_list;
     }
     return;
@@ -290,51 +293,58 @@ int dfs_visit_stack(Graph *graph, Node *node){
     Adj *edge = NULL;
 
     create_stack(&s);
+    node->color = GRAY;
+    node->cicle_color = WHITE;
     push(&s, node);
 
+    i = 0;
     while(!empty_stack(&s)){
         u = pop(&s);
-        if(u->color == WHITE){
-            u->color = GRAY;
-            if(u->predecessor != NULL){
-                u->cicle_color = ((u->predecessor->color) + 1)%2;
-            }else{
-                u->cicle_color = WHITE;
-            }
+        u->color = GRAY;
+        if(u->predecessor != NULL){
+            u->cicle_color = ((u->predecessor->cicle_color) + 1)%2;
         }
+
         edge = u->adj_list;
-        i = 0;
-        while(edge != NULL){
+        while(edge != NULL && edge->color == WHITE){
+            edge->color = GRAY;
             v = edge->node;
+
             if(v != NULL && v->color == WHITE){
-                v->color = GRAY;
                 v->predecessor = u;
-                v->cicle_color = ((u->cicle_color)+1)%2;
                 push(&s,v);
             }
+            
             else if(v != NULL && v->color == GRAY){
                 next_color = ((u->cicle_color) + 1)%2;
                 if(v->cicle_color != next_color){
-                    printf("dotutama\n");
                     return 1;
-                 }
+                }
             }
             edge = edge->next;
-            i = i+1;
         }
+        i = i+1;
     }
-    if(s.stack_nodes != NULL){ free(s.stack_nodes);}
+    if(s.stack_nodes != NULL){ free(s.stack_nodes);s.stack_nodes=NULL;}
     return ret;
 }
 
-
+/* Chama a dfs para garantir que atingiu todos os vertices
+ * Argumentos:
+ *      graph: ponteiro para o grafo
+ * Retorno:
+ *  0: se nao foram encontrados ciclos impares
+ *  1: cc
+*/
 int dfs_stack(Graph *graph){
     int ret = 0;
     int i = 0;
     for(i = 0; i < graph->n_nodes; i++){
         if(graph->nodes[i].color == WHITE){
-            ret = dfs_visit_stack(graph, &graph->nodes[i]);
-            if(ret > 0){break;}
+            ret = dfs_visit_stack(graph, &(graph->nodes[i]));
+            if(ret > 0){
+                break;
+            }
         }
     }
     return ret;
