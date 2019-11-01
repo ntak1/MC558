@@ -26,11 +26,12 @@
 #define N_ADJ n
 #define WHITE 0
 #define GRAY 1
-#define BLACK 2
 #define INITIAL_COLOR -1
-#define STACK_MAX_SIZE 1
+#define STACK_MAX_SIZE 128
 
-/* ESTRUTURAS DE DADOS*/
+/*-----------------------------------------------------------------------------
+ * DEFINICAO DAS ESTRUTURAS DE DADOS
+ *----------------------------------------------------------------------------- */
 typedef struct Node Node;
 typedef struct Adj Adj;
 
@@ -61,6 +62,91 @@ typedef struct Stack{
 } Stack;
 
 
+/*-----------------------------------------------------------------------------
+ * PRAGMAS
+ *----------------------------------------------------------------------------- */
+
+void create_adj(Graph* graph,int i, int j);
+void print_graph(Graph *graph);
+int create_stack(Stack *s);
+void push(Stack *s, Node * node);
+int empty_stack(Stack * s);
+Node *pop(Stack *s);
+int dfs_visit_stack(Graph *graph, Node *node);
+int dfs_stack(Graph *graph);
+
+
+/*-----------------------------------------------------------------------------
+ * LOGICA PRINCIPAL: LEITURA E ESCRITA DE DADOS
+ *----------------------------------------------------------------------------- */
+
+int main(void){
+    int m=0,n=0;                /* numero de moleculas ligacoes */
+    int i=0,j=0;                /* ligacao: molecula i se liga na j*/
+    Graph graph;                /* estrutura que contera a molecula e ligacoes*/
+    int test = -1;              /* 1 se a pilula eh veneno 0 caso ela deva ser testada*/
+    int n_adj=0;                /* variavel auxiliar*/
+    Adj *adj_list = NULL;       /* variavel auxiliar*/
+    Adj *adj_list_aux = NULL;   /* variavel auxiliar*/
+    
+    /* Recebe a entrada do programa*/        
+    scanf("%d %d", &m, &n);
+
+    /* Inicializa o grafo*/
+    graph.nodes = (Node*)malloc(sizeof(Node)*N_NODES);
+    if(graph.nodes == NULL){return 1;}
+    graph.n_nodes = N_NODES;
+    for(i = 0; i < N_NODES; i++){
+        graph.nodes[i].value = i+1;                /* rotulo do veritice*/
+        graph.nodes[i].predecessor = NULL;         /* predecessor na arv da DFS*/
+        graph.nodes[i].adj_list = NULL;            /* listas de adj de cada no*/
+        graph.nodes[i].color = WHITE;              /* cores para dfs*/
+        graph.nodes[i].cicle_color = INITIAL_COLOR;/* cores para verificar existenicia de ciclo impar*/
+    }
+
+    /* Cria adjacencias*/
+    while(n_adj < N_ADJ){
+        scanf("%d %d", &i, &j);
+        create_adj(&graph, i-1, j-1);
+        n_adj++;
+    }
+
+
+    /* Rotina DFS para verificar existencia de ciclos impares*/
+    test = dfs_stack(&graph); 
+    if(test == 0){
+        printf("doturacu ou dotutama\n");
+    }
+
+    /* Desaloca memoria dinamica das variaveis*/
+    if(graph.nodes != NULL){
+        for(i = 0; i < N_NODES; i ++){
+                /* Desaloca lista de adjacencias*/
+                adj_list = graph.nodes[i].adj_list;
+                while(adj_list != NULL){
+                    adj_list_aux = adj_list;
+                    adj_list = adj_list->next;
+                    free(adj_list_aux);
+                }
+        }
+        /* Desaloca vetor de nos*/
+        free(graph.nodes);
+    }
+
+    return 0;
+}
+
+/*-----------------------------------------------------------------------------
+ * FUNCOES
+ *----------------------------------------------------------------------------- */
+
+/* Cria uma aresta nao orientada entre dois vertices
+ * Argumentos:
+ *      graph: um apontador para  uma struct do tipo Graph que contem o grafo
+ *      i,j: par de vertices que sera ligado por uma aresta
+ * Retorno:
+ *      void
+*/
 void create_adj(Graph* graph,int i, int j){
     Adj *i_adj_list = NULL, *j_adj_list = NULL;
 
@@ -92,6 +178,15 @@ void create_adj(Graph* graph,int i, int j){
     return;
 }
 
+
+
+/* Imprime os nos de um grafo com seus nos vizinhos, cor da DFS, cor
+ * para encontrar ciclos impares.
+ * Argumentos:
+ *      graph: um apontador para  uma struct do tipo Graph que contem o grafo
+ * Retorno:
+ *      void
+ */
 void print_graph(Graph *graph){
     int i;
     Adj *temp = NULL;
@@ -101,13 +196,23 @@ void print_graph(Graph *graph){
         printf("Node: %d\n\tAdjList: ",i+1);
         temp = graph->nodes[i].adj_list;
         while(temp != NULL){
-            printf("(%d, color %d, cicle_color %d) ", temp->node->value,temp->node->color,temp->node->cicle_color);
+            printf("(%d, color %d, cicle_color %d) ", temp->node->value,
+                   temp->node->color,temp->node->cicle_color);
             temp = temp->next;
         }
         printf("\n");
     }
 }
 
+
+
+/* Inicializa uma pilha
+ * Argumentos:
+ *     s: um apontador para uma struct do tipo Stack
+ *  Retorno:
+ *      0: em caso de sucesso
+ *      1: caso tenha ocorrido erro na alocacao de memoria
+ */
 int create_stack(Stack *s){
     int ret = 0;
     s->max_size = STACK_MAX_SIZE;
@@ -117,53 +222,77 @@ int create_stack(Stack *s){
     return ret;
 }
 
+
+
+/* Empilha um elemento do tipo Node*
+ * Argumentos:
+ *      s: apontador para a pilha
+ *      node: apontador para um tipo Node
+ * Retorno:
+ *      void
+ */
 void push(Stack *s, Node * node){
     s->top = (s->top) + 1;
     s->stack_nodes[s->top] = node;
-    //printf("STACK TOP %d\n", s->top);
-    //printf("Expression %d\n",  (((s->max_size)-sizeof(Node*))/sizeof(Node*)));
     if (s->top >= (((s->max_size)-sizeof(Node*))/sizeof(Node*))){
         (s->max_size) *= 2;
-        //printf("NEW MAX SIZE: %d\n", s->max_size);
         s->stack_nodes = (Node**)realloc(s->stack_nodes,(sizeof(Node*)*(s->max_size)));
-        //fflush(stdout);printf("HERE\n");
     }
-    //printf("STACK TOP %d\n", s->top);
 }
 
+
+
+/* Veririca se uma pilha esta vazia
+ * Argumentos:
+ *      s: ponteiro para a pilha
+ * Retorno:
+ *      0: caso nao esteja vazia, quaquer outro valor c.c.
+ */
 int empty_stack(Stack * s){
     return (s->top == -1);
 }
 
+
+
+/* Retorna o elemento do topo da pilha e o exclui dessa
+ * Argumentos:
+ *      s: ponteiro para a pilha
+ * Retorno:
+ *      elemento no topo da pilha
+ */
 Node *pop(Stack *s){
     int old_top = s->top;
     Node *ret = NULL;
     if(!empty_stack(s)){
-        //printf("NOT NULL\n");
         ret = (s->stack_nodes)[old_top];
         s->top = (s->top)-1;
     }
-    //printf("NULLLLLLL\n");
     return ret;
 }
 
 
 
+/* Modificacao da rotina DFS-VISIT apresentada no Cormen para detectar a
+ * existencia de ciclos impares em um grafo nao orientado
+ * Argumentos:
+ *      graph: apontador para o grafo
+ *      node: um apontador para o tipo Node
+ * Retorno:
+ *      0 caso nao haja um ciclo impar, i.e. a molecula deve ser testada
+ *      1 c.c.
+ */
 int dfs_visit_stack(Graph *graph, Node *node){
     int i;
     int ret = 0;
     Stack s;
     Node *u, *v;
     char next_color = INITIAL_COLOR;
-    Adj *edge = NULL, *old_edge = NULL;
+    Adj *edge = NULL;
 
     create_stack(&s);
-
-    /*sair*/
     push(&s, node);
 
     while(!empty_stack(&s)){
-        //fflush(stdout);printf("Entered HERE!\n");
         u = pop(&s);
         if(u->color == WHITE){
             u->color = GRAY;
@@ -178,22 +307,23 @@ int dfs_visit_stack(Graph *graph, Node *node){
         while(edge != NULL){
             v = edge->node;
             if(v != NULL && v->color == WHITE){
+                v->color = GRAY;
                 v->predecessor = u;
                 v->cicle_color = ((u->cicle_color)+1)%2;
                 push(&s,v);
             }
             else if(v != NULL && v->color == GRAY){
-                next_color = ((u->color) + 1)%2;
+                next_color = ((u->cicle_color) + 1)%2;
                 if(v->cicle_color != next_color){
-                    printf("VENENO\n");
+                    printf("dotutama\n");
                     return 1;
                  }
             }
-            old_edge = edge;
             edge = edge->next;
             i = i+1;
         }
     }
+    if(s.stack_nodes != NULL){ free(s.stack_nodes);}
     return ret;
 }
 
@@ -208,50 +338,4 @@ int dfs_stack(Graph *graph){
         }
     }
     return ret;
-}
-
-int main(void){
-    int m=0,n=0;
-    int i=0,j=0;
-    int n_adj=0;
-    Graph graph;
-    Node *node;
-    int ret = -1;
-    /* Recebe a entrada do programa*/        
-    scanf("%d %d", &m, &n);
-    //printf("m = %d, n = %d\n", m, n);
-
-    /* Inicializa o grafo*/
-    graph.nodes = (Node*)malloc(sizeof(Node)*N_NODES);
-    if(graph.nodes == NULL){
-        //printf("Error, malloc failed!\n");
-        return 1;
-    }
-    graph.n_nodes = N_NODES;
-    for(i = 0; i < N_NODES; i++){
-        graph.nodes[i].value = i+1;
-        graph.nodes[i].predecessor = NULL;
-        graph.nodes[i].adj_list = NULL;
-        graph.nodes[i].color = WHITE;
-        graph.nodes[i].cicle_color = INITIAL_COLOR;
-    }
-
-    /* Cria adjacencias*/
-    while(n_adj < N_ADJ){
-        scanf("%d %d", &i, &j);
-        //printf("i = %d, j = %d\n", i, j);
-        create_adj(&graph, i-1, j-1);
-        n_adj++;
-    }
-
-
-    /* DFS*/
-    ret = dfs_stack(&graph); 
-    if(ret == 0){
-        printf("TESTAR\n");
-    }
-    /* Free nas variaveis*/
-    print_graph(&graph);
-
-    return 0;
 }
