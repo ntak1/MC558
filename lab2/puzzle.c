@@ -22,6 +22,9 @@
 #define LEFT(i) i/2
 #define RIGHT(i) i/2+1
 
+#define WHITE 0
+#define BLACK 1
+
 /*-----------------------------------------------------------------------------
  * DEFINICAO DAS ESTRUTURAS DE DADOS
  *----------------------------------------------------------------------------- */
@@ -39,7 +42,7 @@ struct Node{
 
 struct Adj{
     Node *node;
-    int weigth;
+    int weight;
     struct Adj *next;
 };
 
@@ -48,31 +51,35 @@ typedef struct Graph{
     int n_nodes;
 } Graph;
 
+typedef struct Heap{
+    Node ** heap;
+    int size;
+} Heap;
 
-void heapify(Node **heap, int tam_heap, int pai) {
+
+/*Rotina que conserta um heap*/
+void heapify(Heap *q, int parent) {
+    Node ** heap = q->heap;
     Node *temp;
-    int filho = 2*pai;
-    while (filho <= tam_heap) {
-        if (filho < tam_heap && heap[filho]->key > heap[filho+1]->key) filho++;
-        if (heap[filho/2]->key <= heap[filho]->key) break;
-        temp = heap[filho/2];
-        heap[filho/2] = heap[filho];
-        heap[filho] = temp;
-        filho *= 2;/*vai para a proxima "geracao"*/
+    int descendant = 2*parent;
+    while (descendant <= tam_heap) {
+        if (descendant < tam_heap && heap[descendant]->key > heap[descendant+1]->key)
+            descendant++;
+        if (heap[descendant/2]->key <= heap[descendant]->key) break;
+        temp = heap[descendant/2];
+        heap[descendant/2] = heap[descendant];
+        heap[descendant] = temp;
+        descendant *= 2;/*vai para a proxima "geracao"*/
     }
 }
 
 
-void build_heap(Node* queue){
-    
-    
-}
-
 /*transforma um vetor que nao eh um heap em um heap*/
-void build_heap (Node **heap, int tam_heap) {
+void build_heap (Heap *q, int tam_heap) {
     int k;
     int f;
-    node *temp;
+    Node **heap = q->heap;
+    Node *temp;
     for (k = 1; k < tam_heap -1; ++k) {                   
         /* v[1..k] Ã© um heap*/
         f = k+1;
@@ -85,6 +92,50 @@ void build_heap (Node **heap, int tam_heap) {
             f /= 2;                        
         }
     }
+}
+
+
+/* Extrai o menor valor de um heap aplicando heapfy para manter a propriedade de
+ * heap
+ * */
+Node * extract_min(Heap *q){
+    Node *min = heap[1];
+    heap[1] = A[size_heap];
+    q->size = (q->size) -1;
+    heapify(q,1);
+    return min;
+}
+
+/* Encontra o caminho minimo de source para todos os outros vertices
+ * a rotina retorna ao encotrar o caminho minimo de source ate dest
+ * */
+void mst_prim(Graph *graph, Node *source, Node* dest, Heap *q){
+    Node **heap = q->heap;
+    Node *u = NULL, v* = NULL;
+    Adj *edge;
+    int i = 0;
+    /* Initialize the keys, parents and heap*/
+    for(i = 0; i < graph.n_nodes; i++){
+        graph[i].key = 0;
+        graph[i].color = WHITE;
+        graph[i].predecessor = NULL;
+        heap[i + 1] = &(graph[i]);
+    } 
+    source.key = 0;
+    
+    while(q->size > 0){
+        u = extract_min(q);
+        u->color = BLACK;
+        edge = u->adj_list;
+        while(edge != NULL){
+            v = edge->node;
+            /* Verifica se v esta em q e se o peso da aresta eh menor que key*/
+            if( v->color == WHITE && edge->weight < v->key){
+                v->predecessor = u;
+                v->key = edge->weight;
+            }
+            edge = edge->next;
+        }
     }
 }
 
@@ -95,7 +146,6 @@ void build_heap (Node **heap, int tam_heap) {
 
 void create_adj(Graph* graph,int i, int j);
 void print_graph(Graph *graph);
-int create_stack(Stack *s);
 
 
 /*-----------------------------------------------------------------------------
@@ -106,10 +156,12 @@ int main(void){
     int m=0,n=0;                /* numero de moleculas ligacoes */
     int i=0,j=0;                /* ligacao: molecula i se liga na j*/
     Graph graph;                /* estrutura que contera a molecula e ligacoes*/
-    int test = -1;              /* 1 se a pilula eh veneno 0 caso ela deva ser testada*/
     int n_adj=0;                /* variavel auxiliar*/
     Adj *adj_list = NULL;       /* variavel auxiliar*/
     Adj *adj_list_aux = NULL;   /* variavel auxiliar*/
+
+    Node **heap;
+    int tam_heap;
     
     /* Le o numero de areas e o numero de ligacoes*/        
     scanf("%d %d", &n, &m);
@@ -122,8 +174,6 @@ int main(void){
         graph.nodes[i].value = i+1;                /* rotulo do veritice*/
         graph.nodes[i].predecessor = NULL;         /* predecessor na arv da DFS*/
         graph.nodes[i].adj_list = NULL;            /* listas de adj de cada no*/
-        graph.nodes[i].color = WHITE;              /* cores para dfs*/
-        graph.nodes[i].cicle_color = INITIAL_COLOR;/* cores para verificar existenicia de ciclo impar*/
     }
 
     /* Cria adjacencias*/
@@ -134,6 +184,9 @@ int main(void){
     }
 
 
+
+    /*Cria fila de prioridades*/
+    heap = (Node**)malloc((N_NODES + 1)*sizeof(Node*));
 
     /* Desaloca memoria dinamica do grafo*/
     if(graph.nodes != NULL){
@@ -170,7 +223,7 @@ void create_adj(Graph* graph,int i, int j){
     /* Insere j na lista de adj de i*/    
     i_adj_list = (Adj*)malloc(sizeof(Adj));
     i_adj_list->next = NULL;
-    i_adj_list->color = WHITE;
+    i_adj_list->weight = 0;
     i_adj_list->node = &(graph->nodes[j]);
     if(graph->nodes[i].adj_list == NULL){
         graph->nodes[i].adj_list = i_adj_list;
@@ -183,7 +236,7 @@ void create_adj(Graph* graph,int i, int j){
     /* Insere j na lista de adj de i*/    
     j_adj_list = (Adj*)malloc(sizeof(Adj));
     j_adj_list->next = NULL;
-    j_adj_list->color = WHITE;
+    j_adj_list->weight = 0;
     j_adj_list->node = &(graph->nodes[i]);
     if(graph->nodes[j].adj_list == NULL){
         graph->nodes[j].adj_list = j_adj_list;
@@ -214,8 +267,8 @@ void print_graph(Graph *graph){
         printf("Node: %d\n\tAdjList: ",i+1);
         temp = graph->nodes[i].adj_list;
         while(temp != NULL){
-            printf("(%d, color %d, cicle_color %d) ", temp->node->value,
-                   temp->node->color,temp->node->cicle_color);
+            printf("(%d, color %d, key %d) ", temp->node->value,
+                   temp->node->color, temp->node->key);
             temp = temp->next;
         }
         printf("\n");
