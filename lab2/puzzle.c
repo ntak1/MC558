@@ -15,7 +15,7 @@
 #include<stdlib.h>
 
 #define N_NODES n
-#define N_ADJ n
+#define N_ADJ m
 #define MAX_WEIGHT 1000000
 
 #define HEAP_SIZE 100
@@ -92,7 +92,9 @@ void build_heap (Heap *q) {
         while (f > 1 && heap[f/2]->key > heap[f]->key) {  
             temp = heap[f/2];
             heap[f/2] = heap[f];
+            heap[f/2]->heap_pos = f/2;
             heap[f] = temp;     
+            heap[f]->heap_pos = f;     
             f /= 2;                        
         }
     }
@@ -122,8 +124,12 @@ void decrease_key(Heap *q, Node * node, int new_value){
     Node *temp;
     int parent = 0;
     int i;
+    /*ERRRRRAAAAAAAAAAAAADOOOOOOOOOOOOOOOOO*/
     i = node->heap_pos;
-    while(i > 1  && heap[PARENT(i)]->key > heap[i]->key){
+
+    if(i > 1)
+    printf("SCOOOROO %d %d %d %d\n", heap[PARENT(i)]->value, heap[PARENT(i)]->key, heap[i]->key, node->value);
+    while(i > 1  && heap[PARENT(i)]->key >= heap[i]->key){
         /* troca pai e filho e atualiza a posicao do no*/
         //fflush(stdout);printf("ENTERED DECREASE KEY i = %d\n", i);
         temp = heap[i];
@@ -148,7 +154,7 @@ void print_heap(Heap*q){
     Node **heap = q->heap;
     printf("HEAP: ");
     for(i = 1; i <= q->size; i++){
-        printf("(value = %d, key = %d)", heap[i]->value, heap[i]->key);
+        printf("(value = %d, key = %d pos = %d)", heap[i]->value, heap[i]->key, heap[i]->heap_pos);
     }
     printf("\n");
 }
@@ -175,9 +181,10 @@ void mst_prim(Graph *graph, int source_index, int dest_index, Heap *q){
         graph->nodes[i].heap_pos = i+1;
         heap[i + 1] = &(graph->nodes[i]);
     } 
-    q->size = (graph->n_nodes);
-    build_heap(q);
     source->key = 0;
+    q->size = (graph->n_nodes);
+
+    build_heap(q);
     
     /* Sanity check */
     print_heap(q);
@@ -191,18 +198,23 @@ void mst_prim(Graph *graph, int source_index, int dest_index, Heap *q){
             v = edge->node;
             /* Verifica se v esta em q e se o peso da aresta eh menor que key*/
             if( v->color == WHITE && edge->weight < v->key){
-                fflush(stdout);printf("V (value %d key %d)\n", v->value, v->key);
                 v->predecessor = u;
                 v->predecessor_weight = edge->weight;
                 /*v->key = edge->weight;*/
                 /*DECREASE-KEY*/
+                //printf("EDGE %d\n", edge->weight);
                 decrease_key(q, v, edge->weight);
                 //fflush(stdout);printf("VIVO\n");
+                fflush(stdout);printf("V (value %d key %d)\n", v->value, v->key);
+                print_heap(q);
+                printf("\n");
             }
+
             edge = edge->next;
         }
-        if (u == dest){
+        if (u == dest && u->predecessor != NULL){
             ret = 1;
+            printf("OUT HERE FHDJAKFHDLKH %d %d\n", u->value, dest->value);
             break;
         }
     }
@@ -272,6 +284,7 @@ int main(void){
 
     /*Le os pares de vertices*/
     scanf("%d", &n_pairs);
+    printf("NUMBER PAIRS: %d\n",n_pairs); 
     for(i = 0; i < n_pairs; i++){
         scanf("%d %d", &source_index, &dest_index);
         printf("source %d, dest %d\n", source_index, dest_index);
@@ -284,7 +297,7 @@ int main(void){
         source = &(graph.nodes[source_index]);
         dest = &(graph.nodes[dest_index]);
         node_temp = dest;
-        printf("(%d %d)\n", dest->value, dest->key);
+        printf("(%d %d) %d\n", dest->value, dest->key, dest->predecessor);
         max_edge_weight = 0;
         while(node_temp != NULL){
             //fflush(stdout);printf("HERE\n"); 
