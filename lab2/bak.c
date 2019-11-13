@@ -124,12 +124,17 @@ void decrease_key(Heap *q, Node * node, int new_value){
     Node *temp;
     int parent = 0;
     int i;
+    /*ERRRRRAAAAAAAAAAAAADOOOOOOOOOOOOOOOOO*/
     i = node->heap_pos;
 
+    if(i > 1)
+    printf("SCOOOROO %d %d %d %d\n", heap[PARENT(i)]->value, heap[PARENT(i)]->key, heap[i]->key, node->value);
     while(i > 1  && heap[PARENT(i)]->key >= heap[i]->key){
         /* troca pai e filho e atualiza a posicao do no*/
+        //fflush(stdout);printf("ENTERED DECREASE KEY i = %d\n", i);
         temp = heap[i];
         parent = PARENT(i);
+        //fflush(stdout);printf("ENTERED DECREASE KEY parent = %d\n", parent);
         heap[i] = heap[parent];      /*coloca o pai no lugar do filho*/
         heap[i]->heap_pos = i;   /*nova posicao do pai*/
 
@@ -137,8 +142,10 @@ void decrease_key(Heap *q, Node * node, int new_value){
         heap[parent]->heap_pos = parent;   /*nova posicao do filho*/
 
         i = PARENT(i);
+        //fflush(stdout);printf("END = %d\n", parent);
     }
     
+    //fflush(stdout);printf("LEFT = %d\n", i);
 }
 
 
@@ -180,9 +187,11 @@ void mst_prim(Graph *graph, int source_index, int dest_index, Heap *q){
     build_heap(q);
     
     /* Sanity check */
+    print_heap(q);
 
     while(q->size > 0 && !ret){
         u = extract_min(q);
+        fflush(stdout);printf("U (value %d key %d)\n", u->value, u->key);
         u->color = BLACK;
         edge = u->adj_list;
         while(edge != NULL){
@@ -191,14 +200,21 @@ void mst_prim(Graph *graph, int source_index, int dest_index, Heap *q){
             if( v->color == WHITE && edge->weight < v->key){
                 v->predecessor = u;
                 v->predecessor_weight = edge->weight;
+                /*v->key = edge->weight;*/
                 /*DECREASE-KEY*/
+                //printf("EDGE %d\n", edge->weight);
                 decrease_key(q, v, edge->weight);
+                //fflush(stdout);printf("VIVO\n");
+                //fflush(stdout);printf("V (value %d key %d)\n", v->value, v->key);
+                //print_heap(q);
+                //printf("\n");
             }
 
             edge = edge->next;
         }
         if (u == dest && u->predecessor != NULL){
             ret = 1;
+            printf("OUT HERE FHDJAKFHDLKH %d %d\n", u->value, dest->value);
             break;
         }
     }
@@ -227,6 +243,7 @@ int main(void){
 
     Heap q;
     Node **heap;
+    int tam_heap;
     int weight;
     
     int n_pairs = 0;
@@ -258,6 +275,7 @@ int main(void){
     }
 
     /* Sanity check*/
+    print_graph(&graph);
 
     /* ALoca espaco para fila de prioridades*/
     heap = (Node**)malloc((N_NODES + 1)*sizeof(Node*));
@@ -266,8 +284,10 @@ int main(void){
 
     /*Le os pares de vertices*/
     scanf("%d", &n_pairs);
+    printf("NUMBER PAIRS: %d\n",n_pairs); 
     for(i = 0; i < n_pairs; i++){
         scanf("%d %d", &source_index, &dest_index);
+        printf("source %d, dest %d\n", source_index, dest_index);
 
         /* Busca mst para cada par de vertices*/
         mst_prim(&graph, source_index, dest_index, &q);
@@ -277,16 +297,22 @@ int main(void){
         source = &(graph.nodes[source_index]);
         dest = &(graph.nodes[dest_index]);
         node_temp = dest;
+        printf("(%d %d) %d\n", dest->value, dest->key, dest->predecessor);
         max_edge_weight = 0;
         while(node_temp != NULL){
+            //fflush(stdout);printf("HERE\n"); 
+            /*...........*/
             if(node_temp->predecessor_weight > max_edge_weight){
                 max_edge_weight = node_temp->predecessor_weight;
             }
             path_weight = path_weight + (node_temp->predecessor_weight);
+            //printf("PRED %d WEIGHT %d\n", node_temp->predecessor->value,node_temp->predecessor_weight);
+            //fflush(stdout);printf("HERE2\n"); 
             node_temp = node_temp->predecessor;
+            //fflush(stdout);printf("HERE3\n"); 
             if (node_temp == source) break;
         }
-        printf("%d\n", max_edge_weight);
+        printf("RESPOSTA: %d\n", max_edge_weight);
 
     }
 
