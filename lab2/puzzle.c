@@ -19,8 +19,6 @@
 #define MAX_WEIGHT 1000000
 
 #define HEAP_SIZE 100
-#define LEFT(i) i/2
-#define RIGHT(i) i/2+1
 #define PARENT(i) i/2
 
 #define WHITE 0
@@ -67,12 +65,14 @@ void heapify(Heap *q, int parent) {
     Node *temp;
     int descendant = 2*parent;
     while (descendant <= q->size) {
-        if (descendant < q->size && heap[descendant]->key > heap[descendant+1]->key)
+        if (descendant <= q->size && heap[descendant]->key > heap[descendant+1]->key)
             descendant++;
         if (heap[descendant/2]->key <= heap[descendant]->key) break;
         temp = heap[descendant/2];
         heap[descendant/2] = heap[descendant];
+        heap[descendant/2]->heap_pos = descendant/2;
         heap[descendant] = temp;
+        heap[descendant]->heap_pos = descendant;
         descendant *= 2;/*vai para a proxima "geracao"*/
     }
 }
@@ -84,7 +84,7 @@ void build_heap (Heap *q) {
     int f;
     Node **heap = q->heap;
     Node *temp;
-    for (k = 1; k < (q->size) -1; ++k) {                   
+    for (k = 1; k < (q->size); k++) {                   
         /* v[1..k] Ã© um heap*/
         f = k+1;
         /*enquanto a key do pai eh maior que o filho troca
@@ -108,6 +108,7 @@ Node * extract_min(Heap *q){
     Node **heap = q->heap;
     Node *min = heap[1];
     heap[1] = heap[q->size];
+    heap[1]->heap_pos = 1;
     q->size = (q->size) -1;
     heapify(q,1);
     return min;
@@ -126,7 +127,9 @@ void decrease_key(Heap *q, Node * node, int new_value){
     int i;
     i = node->heap_pos;
 
-    while(i > 1  && heap[PARENT(i)]->key >= heap[i]->key){
+    /*printf("DECREASE KEY %d\n", node->value);
+    */
+    while(i > 1  && (heap[PARENT(i)]->key) > (heap[i]->key)){
         /* troca pai e filho e atualiza a posicao do no*/
         temp = heap[i];
         parent = PARENT(i);
@@ -174,17 +177,24 @@ void mst_prim(Graph *graph, int source_index, int dest_index, Heap *q){
         graph->nodes[i].heap_pos = i+1;
         heap[i + 1] = &(graph->nodes[i]);
     } 
+    /*printf("Source value %d\n", source->value);
+    */
     source->key = 0;
     q->size = (graph->n_nodes);
 
     build_heap(q);
     
+    /*print_heap(q);
+    printf("\n");
+    */
     /* Sanity check */
 
     while(q->size > 0 && !ret){
         u = extract_min(q);
         u->color = BLACK;
         edge = u->adj_list;
+        /*printf("U (value = %d, key = %d)\n", u->value, u->key);
+        */
         while(edge != NULL){
             v = edge->node;
             /* Verifica se v esta em q e se o peso da aresta eh menor que key*/
@@ -193,6 +203,10 @@ void mst_prim(Graph *graph, int source_index, int dest_index, Heap *q){
                 v->predecessor_weight = edge->weight;
                 /*DECREASE-KEY*/
                 decrease_key(q, v, edge->weight);
+                /*printf("V (value = %d, key = %d)\n", v->value, v->key);
+                print_heap(q);
+                printf("\n");
+                */
             }
 
             edge = edge->next;
@@ -270,6 +284,8 @@ int main(void){
         scanf("%d %d", &source_index, &dest_index);
 
         /* Busca mst para cada par de vertices*/
+        /*printf("(source = %d, index = %d)\n", source_index, dest_index);
+        */
         mst_prim(&graph, source_index, dest_index, &q);
 
         /*Calcula o peso do caminho minimo a partir dos predecessores*/
