@@ -306,7 +306,7 @@ int main(void){
                 max_edge_weight = node_temp->predecessor_weight;
             }
             path_weight = path_weight + (node_temp->predecessor_weight);
-            printf("PRED %d WEIGHT %d\n", node_temp->predecessor->value,node_temp->predecessor_weight);
+            //printf("PRED %d WEIGHT %d\n", node_temp->predecessor->value,node_temp->predecessor_weight);
             //fflush(stdout);printf("HERE2\n"); 
             node_temp = node_temp->predecessor;
             //fflush(stdout);printf("HERE3\n"); 
