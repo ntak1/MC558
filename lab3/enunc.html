@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><!-- saved from url=(0053)https://susy.ic.unicamp.br:9999/mc558ab/01/enunc.html -->
+
+
+
+
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Laboratório 03</title>
+
+
+
+
+  
+  
+
+
+
+<style type="text/css">
+
+
+p {
+	margin-left: 1cm;
+	margin-right: 1cm;
+	}
+table.matriz {
+	border-width: 1px;
+	border-spacing: 0px;
+	border-style: solid;
+	border-color: black;
+   border-collapse: collapse;
+   
+}
+
+td.matriz{
+font-size: 25px;
+   border-width: 1px;
+	border-spacing: 0;
+	border-style: solid;
+	border-color: black;
+	padding:5px;
+}
+
+
+td.cabecalho{
+font-size: 15px;
+text-align:center;
+   border-width: 2px;
+	border-spacing: 1;
+	border-style: solid;
+	border-color: black;
+	padding:5px;
+}
+
+td.invisivel{
+	border-width: 0px;
+	border-spacing: 0;
+	border-style: solid;
+	border-color: black;
+	padding:5px;
+}
+
+.cabecalho1{
+font-size: 20px;
+}
+
+.cabecalho2{
+font-size: 20px;
+}
+
+
+.header1{
+font-size: 15px;
+}
+
+.header2{
+font-size: 15px;
+}
+
+.rotation {
+	width: 30px;
+}
+.rotation > div{
+
+	display: block;
+	font-weight: bolder;
+	width: 10px !important;
+	margin-top: 100px;
+
+	/* Safari */
+	-webkit-transform: rotate(-90deg);
+
+	/* Firefox */
+	-moz-transform: rotate(-90deg);
+
+	/* IE */
+	-ms-transform: rotate(-90deg);
+
+	/* Opera */
+	-o-transform: rotate(-90deg);
+
+	/* Internet Explorer */
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+
+}
+
+td.impossible{
+
+background-color:EEE0E0;
+}
+
+
+
+</style></head><body bgcolor="#e0e0e0" text="#000000">
+<h2>Instituto de Computação da UNICAMP</h2>
+
+<h3>MC558: Projeto e análise de algoritmos II<br>
+</h3>
+
+<h4>Segundo Semestre de 2019 - Turma A<br>
+</h4>
+
+<h3>Laboratório Nº 03 - Wormhole<br>
+</h3>
+<p>Prazo de entrega: <strong>04/12/2019 às 23:59:59</strong></p>
+
+
+<table>
+  <tbody>
+    <tr>
+      <td><i>Docente:</i></td>
+      <td><i>C. N. Campos</i></td>
+    </tr>
+    <tr>
+      <td><i>Monitor:</i></td>
+      <td><i>Léo Vieira Peres<br>
+</i></td>
+    </tr>
+  </tbody>
+</table>
+
+
+<hr>
+
+<h3>Contexto:</h3>
+
+<center>
+<img style="width: 775px; height: 411px;" alt="Wormhole" src="wormhole.jpg"><br>
+<p> <font size="-1"> https://www.newsweek.com/wormholes-could-be-portals-other-universes-heres-what-one-might-look-1196902 </font> </p>
+</center>
+
+<p> No ano de 2163, buracos de minhoca foram descobertos. Um buraco de
+minhoca é um túnel no espaço-tempo que conecta dois sistemas solares.
+Esses túneis têm algumas propriedades peculiares:</p>
+
+<ul><ul>
+<li>    Buracos de minhoca são unidirecionais. </li><li>Todo buraco de minhoca começa e termina em um sistema solar.</li>
+	
+<li>	Um sistema solar pode possuir mais de uma entrada ou saída de buracos de minhocas.</li>
+
+<li>    Entre quaisquer pares de sistemas solares, há no máximo um buraco de minhoca em cada sentido.</li>
+
+<li>    Não há buracos de minhoca cujos sistemas solares de entrada e saída sejam o mesmo.</li>
+</ul></ul>
+<p>
+Todos os buracos de minhoca tem uma diferença constante de tempo entre
+sua entrada e saída. Por exemplo, um dado buraco de minhoca pode fazer
+com que a pessoa que o atravesse
+acabe parando 15 anos no futuro. Outro pode transportar uma pessoa para
+42 anos no passado. <br>
+</p>
+<p>Ellie Arroway, uma física brilhante, <span style="color: rgb(0, 153, 0); font-weight: bold;">vivendo na Terra</span>,
+deseja estudar o Big Bang usando buracos de
+minhoca.
+A cientista deseja alcançar uma sequência de buracos de minhoca
+que lhe permita ir suficientemente longe no passado. Seu objetivo é chegar
+ao começo do Universo e ver o Big Bang com seus próprios olhos. Escreva
+um programa para descobrir se sua empreitada será bem sucedida. </p>
+
+
+
+<h3>Entrada:</h3>
+
+<p> A primeira linha da entrada contém dois inteiros <span style="font-style: italic; color: red;">n</span> e <span style="font-style: italic; color: red;">m</span>, indicando, respectivamente, o número de sistemas solares e o número de buracos de minhoca. Em seguida, haverá <span style="font-style: italic; color: red;">m</span> linhas com três inteiros <span style="font-style: italic; color: red;">x</span>, <span style="font-style: italic; color: red;">y</span> e <span style="font-style: italic; color: red;">w(x,y)</span>, indicando que do sistema solar <span style="color: red; font-style: italic;">x</span> pode-se chegar ao sistema solar <span style="font-style: italic; color: red;">y</span> por um buraco de minhoca, terminando <span style="color: red;">|</span><span style="font-style: italic; color: red;">w(x,y)</span><span style="color: red;">|</span> anos, ou no futuro, caso <span style="font-style: italic; color: red;">w(x,y)</span> seja não negativo, ou <span style="font-style: italic; color: red;"></span><span style="font-style: italic; color: red;"></span>no passado, caso <span style="font-style: italic; color: red;">w(x,y)</span> seja não positivo. Os sistemas solares são numerados de<span style="color: red;"> 0 <span style="color: black;">a</span> </span><span style="font-style: italic; color: red;">n</span><span style="color: red;">-1</span>. <span style="color: rgb(0, 153, 0); font-weight: bold;">Considere que o sistema solar da Terra é o de número zero</span>. A entrada deve ser lida da entrada padrão.</p>
+
+
+<h3>Saída:</h3>
+
+<p> I<span style="font-style: italic; color: red;"></span><span style="color: red;"></span>mprima: <span style="color: red;">Possivel</span> se existe uma sequência de buracos de minhoca, <span style="font-weight: bold; color: rgb(0, 153, 0);">alcancável a partir do sistema solar da Terra</span>,&nbsp; que permita à cientista viajar até o início dos tempos; e <span style="color: red;">Impossivel</span>, caso contrário. A saída deve ser escrita na saída padrão e seu programa deve pular uma linha após a impressão.</p>
+
+<h3>Restrições</h3>
+<ul>
+	<li>1 ≤ <span style="font-style: italic; color: red;">n</span> ≤ 1000</li>
+	<li>0 ≤ <span style="font-style: italic; color: red;">m</span>  ≤ 2000</li>
+	<li>-1000 ≤&nbsp; <span style="font-style: italic; color: red;">w(x,y) </span>≤ 1000
+</li>
+	
+</ul>
+
+<p><strong>Exemplo de execução 1: </strong>
+</p>
+
+<table border="0" hspace="30">
+  <tbody>
+    
+    <tr><td><tt><font color="BLUE">3 3<br></font></tt></td></tr>
+    <tr><td><tt><font color="BLUE">0 1 1000<br></font></tt></td></tr>
+    <tr><td><tt><font color="BLUE">1 2 15<br></font></tt></td></tr>
+    <tr><td><tt><font color="BLUE">2 1 -42<br></font></tt></td></tr>
+    
+    <tr><td><span style="font-family: Courier New,Courier,monospace;">Possivel<br>
+</span></td></tr>
+  </tbody>
+</table><strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exemplo de execução 2: </strong><p>
+</p>
+<table border="0" hspace="30">
+  <tbody>
+    <tr><td><tt><font color="BLUE">4 3<br></font></tt></td></tr>
+    <tr><td><tt><font color="BLUE">0 1 10<br></font></tt></td></tr>
+    <tr><td><tt><font color="BLUE">1 2 20<br></font></tt></td></tr>
+    <tr><td><tt><font color="BLUE">2 3 30<br></font></tt></td></tr>
+    
+    <tr><td><span style="font-family: Courier New,Courier,monospace;">Impossivel<br>
+</span></td></tr>
+  </tbody>
+</table><br>
+
+<table>
+  <tbody>
+    <tr>
+      <td><i>Notas:</i></td>
+      <td>Textos em <font color="BLUE"><tt>azul</tt></font> designam dados de
+        entrada, isto é, que devem ser lidos pelo seu programa.</td>
+    </tr>
+    <tr>
+      <td><br>
+</td>
+      <td>Textos em <tt>preto</tt> designam dados de saída, ou seja, que devem
+        ser impressos pelo seu programa.</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+
+<hr>
+
+
+<b>Observações gerais:</b> 
+<ul>
+  <li>O número máximo de submissões é 30;</li>  
+  <li>O seu programa deve estar completamente contido em um único arquivo denominado <tt>wormhole.c</tt> ou <tt>wormhole.cpp</tt>.<br>
+</li>  
+  
+  <li>Para a realização dos testes automáticos, a compilação se dará de uma das seguintes formas:<br>
+    <br>
+    <span style="font-family: Courier New,Courier,monospace;">gcc -Werror -pedantic -Wall -lm -o wormhole wormhole.c</span><br>
+    <span style="font-family: Courier New,Courier,monospace;">g++ -Werror -pedantic -Wall -lm -o wormhole wormhole.cpp</span><br style="font-family: Courier New,Courier,monospace;">
+    <br>
+  </li>
+  
+  <li>Não se esqueça de incluir no início do programa o seu nome e o seu RA;</li>
+  
+  
+</ul>
+<hr>
+<b>Critérios importantes:</b> <br>
+<br>
+Soluções que não façam uso de algorimos em grafos, ou que façam uso de
+alguma estratégia que possa ser caracterizada como má-fé, não serão
+consideradas, isto é, a nota final da tarefa será <span style="color: red; font-weight: bold;">zero</span>, independentemente dos resultados do Susy.
+
+</body></html>
